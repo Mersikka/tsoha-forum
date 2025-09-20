@@ -8,7 +8,8 @@ CREATE TABLE threads (
     id INTEGER PRIMARY KEY,
     title TEXT,
     body TEXT,
-    user_id INTEGER REFERENCES users
+    user_id INTEGER REFERENCES users,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE tags (
