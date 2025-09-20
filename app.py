@@ -4,6 +4,7 @@ from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import db
+import threads
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -26,16 +27,7 @@ def create_thread():
     tags = request.form["tags"]
     user_id = session["user_id"]
 
-    sql = """INSERT INTO threads (title, body, user_id)
-             VALUES (?, ?, ?)"""
-    db.execute(sql, [title, body, user_id])
-
-    # Link tags to thread
-    thread_id = db.last_insert_id()
-    tags = tags.split(" ")
-    for tag in tags:
-        tag_id = db.get_or_create_tag(tag)
-        db.link_tag_to_thread(thread_id, tag_id)
+    threads.add_thread(title, body, tags, user_id)
 
     return redirect("/")
 
