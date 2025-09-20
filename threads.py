@@ -16,3 +16,44 @@ def add_thread(title, body, tags, user_id):
             if bool(fullmatch(re_pattern, tag)):
                 tag_id = db.get_or_create_tag(tag)
                 db.link_tag_to_thread(thread_id, tag_id)
+
+
+def get_threads():
+    sql = "SELECT id, title, created_at FROM threads ORDER BY id DESC"
+
+    return db.query(sql)
+
+
+def get_thread(thread_id):
+    thread_rows = db.query(
+        """
+        SELECT threads.title, threads.body, threads.created_at, users.username
+        FROM threads
+        JOIN users ON threads.user_id = users.id
+        WHERE threads.id = ?
+        """,
+        [thread_id],
+    )
+    if not thread_rows:
+        return None
+
+    thread = thread_rows[0]
+
+    tag_rows = db.query(
+        """
+        SELECT tags.tag_name
+        FROM tags
+        JOIN thread_tags ON tags.id = thread_tags.tag_id
+        WHERE thread_tags.thread_id = ?
+        """,
+        [thread_id],
+    )
+    tags = [row["tag_name"] for row in tag_rows]
+
+    return {
+        "title": thread["title"],
+        "body": thread["body"],
+        "username": thread["username"],
+        "created_at": thread["created_at"],
+        "tags": tags,
+    }

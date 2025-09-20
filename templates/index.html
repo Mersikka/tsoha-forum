@@ -22,6 +22,13 @@
   <p>
     <a href="/new_thread">Uusi lanka</a>
   </p>
+
+  <h2>Ilmoitukset</h2>
+    <ul>
+      {% for thread in threads %}
+      <li><a href="/threads/{{  thread.id  }}">{{ thread.title }}</a></li>
+      {% endfor %}
+    </ul>
 </body>
 
 </html>

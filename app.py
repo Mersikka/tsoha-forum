@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 import config
 import db
 import threads
@@ -12,7 +13,27 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_threads = threads.get_threads()
+    return render_template("index.html", threads=all_threads)
+
+
+@app.route("/threads/<int:thread_id>")
+def show_thread(thread_id):
+    thread = threads.get_thread(thread_id)
+
+    # Convert thread["created_at"] to local time
+    local_time = datetime.now().astimezone()
+    utc_offset = local_time.utcoffset()
+    thread["created_at"] = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S")
+    thread["created_at"] = thread["created_at"] + utc_offset
+    thread["created_at"] = thread["created_at"].strftime(r"%Y-%m-%d %H:%M:%S")
+
+    return render_template("show_thread.html", thread=thread)
+
+
+@app.route("/threads")
+def threads_redirect():
+    return redirect("/")
 
 
 @app.route("/new_thread")

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{  thread["title"]  }}</title>
+</head>
+
+<body>
+  <h1>{{  thread["title"]  }}</h1>
+  <p>Luonut: {{  thread["username"]  }}</p>
+  <p>{{  thread["created_at"]  }}</p>
+  <p>
+    {{  thread["body"]  }}
+  </p>
+  <ul>
+      {% for tag in thread["tags"] %}
+      <li>{{ tag }}</li>
+      {% endfor %}
+    </ul>
+</body>
+
+</html>
