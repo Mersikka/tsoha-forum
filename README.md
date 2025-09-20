@@ -1,10 +1,10 @@
 # tsoha-forum
 Sovellus on Redditin kaltainen foorumi, jossa
-- Käyttäjä voi luoda tunnuksen ja kirjautua sisään.
-- Käyttäjä voi lisätä, muokata ja poistaa lankojen aloituksia.
-- Käyttäjä voi lisätä kuvia aloituksiin.
-- Käyttäjä näkee itse ja muiden lisäämät langat.
-- Käyttäjä voi etsiä lankoja hakusanoin tai tägein.
-- Sovelluksessa on käyttäjäsivut, jossa näkee aloitetut langat, kommentit sekä saatujen tykkäysten yhteismäärän.
-- Käyttäjä voi luokitella lankoja tägeillä.
-- Käyttäjä voi kommentoida omia ja muiden tekemiä lankoja, sekä tykätä aloituksista ja kommenteista.
+- [X] Käyttäjä voi luoda tunnuksen ja kirjautua sisään.
+- [ ] Käyttäjä voi lisätä, muokata ja poistaa lankojen aloituksia.
+- [ ] Käyttäjä voi lisätä kuvia aloituksiin.
+- [ ] Käyttäjä näkee itse ja muiden lisäämät langat.
+- [ ] Käyttäjä voi etsiä lankoja hakusanoin tai tägein.
+- [ ] Sovelluksessa on käyttäjäsivut, jossa näkee aloitetut langat, kommentit sekä saatujen tykkäysten yhteismäärän.
+- [X] Käyttäjä voi luokitella lankoja tägeillä.
+- [ ] Käyttäjä voi kommentoida omia ja muiden tekemiä lankoja, sekä tykätä aloituksista ja kommenteista.
