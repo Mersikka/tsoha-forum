@@ -13,10 +13,13 @@
     {{  thread["body"]  }}
   </p>
   <ul>
-      {% for tag in thread["tags"] %}
-      <li>{{ tag }}</li>
-      {% endfor %}
-    </ul>
+    {% for tag in thread["tags"] %}
+    <li>{{ tag }}</li>
+    {% endfor %}
+  </ul>
+  <p>
+    <a href="/">Takaisin</a>
+  </p>
 </body>
 
 </html>
