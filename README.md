@@ -12,3 +12,23 @@ Sovellus on Redditin kaltainen foorumi, jossa
 - [ ] Sovelluksessa on käyttäjäsivut, jossa näkee aloitetut langat, kommentit sekä saatujen tykkäysten yhteismäärän.
 - [X] Käyttäjä voi luokitella lankoja tägeillä.
 - [ ] Käyttäjä voi kommentoida omia ja muiden tekemiä lankoja, sekä tykätä aloituksista ja kommenteista.
+
+## Sovelluksen asennus
+
+Asenna 'flask' -kirjasto:
+
+```
+$ pip install flask
+```
+
+Luo tietokannan taulut:
+
+```
+$ sqlite3 database.db < schema.sql
+```
+
+Voit käynnistää sovelluksen näin:
+
+```
+$ flask run
+```
