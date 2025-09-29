@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Langan poisto</title>
+</head>
+
+<body>
+  <h1>Langan poisto</h1>
+  <p>Ilmoitus: {{  thread["title"]  }} </p>
+  <p>Oletko varma, että haluat poistaa langan?</p>
+  <form action="/delete_thread/{{  thread["id"]  }}" method="post">
+    <input type="submit" name="remove" value="Poista lanka" />
+    <input type="submit" name="back" value="Peruuta" />
+  </form>
+</body>
+
+</html>
+

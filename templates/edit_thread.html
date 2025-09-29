@@ -21,7 +21,11 @@
       <input type="text" name="tags" value="{{  thread["tags"]  }}" size="35" maxlength="35" placeholder="#kissat #videopelit #urheilu"/>
     </p>
     <input type="hidden" name="thread_id" value="{{  thread["id"]  }}" />
-    <input type="submit" value="Päivitä lankaa" />
+    <div>
+    <input class="button" type="submit" value="Päivitä lankaa" />
+    <a id="back" class="button" href="/threads/{{  thread["id"]  }}">Peruuta</a>
+    <a id="delete" class="button" href="/delete_thread/{{  thread["id"]  }}">Poista lanka</a>
+    </div>
   </form>
 </body>
 

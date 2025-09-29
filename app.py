@@ -85,6 +85,20 @@ def update_thread():
     return redirect(f"/threads/{thread_id}")
 
 
+@app.route("/delete_thread/<int:thread_id>", methods=["GET", "POST"])
+def delete_thread(thread_id):
+    if request.method == "GET":
+        thread = threads.get_thread(thread_id)
+        return render_template("delete_thread.html", thread=thread)
+
+    if request.method == "POST":
+        if "remove" in request.form:
+            threads.delete_thread(thread_id)
+            return redirect("/")
+        else:
+            return redirect(f"/threads/{thread_id}")
+
+
 @app.route("/register")
 def register():
     return render_template("register.html")
