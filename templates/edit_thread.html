@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Langan muokkaus</title>
+</head>
+
+<body>
+  <h1>Langan muokkaus</h1>
+  <form action="/update_thread" method="post">
+    <p>
+      Otsikko: <br />
+      <input type="text" name="title" value="{{  thread["title"]  }}" size="70"/>
+    </p>
+    <p>
+      Leipäteksti: <br />
+      <textarea name="body" rows="15" cols="70">{{  thread["body"]  }}</textarea>
+    </p>
+    <p>
+      Avainsanat: <br />
+      <input type="text" name="tags" value="{{  thread["tags"]  }}" size="35" maxlength="35" placeholder="#kissat #videopelit #urheilu"/>
+    </p>
+    <input type="hidden" name="thread_id" value="{{  thread["id"]  }}" />
+    <input type="submit" value="Päivitä lankaa" />
+  </form>
+</body>
+
+</html>
+

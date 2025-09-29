@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime
 import config
 import db
 import threads
@@ -51,6 +51,38 @@ def create_thread():
     threads.add_thread(title, body, tags, user_id)
 
     return redirect("/")
+
+
+@app.route("/edit_thread/<int:thread_id>")
+def edit_thread(thread_id):
+    thread = threads.get_thread(thread_id)
+
+    # Convert thread["created_at"] to local time
+    local_time = datetime.now().astimezone()
+    utc_offset = local_time.utcoffset()
+    thread["created_at"] = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S")
+    thread["created_at"] = thread["created_at"] + utc_offset
+    thread["created_at"] = thread["created_at"].strftime(r"%Y-%m-%d %H:%M:%S")
+
+    if thread["tags"]:
+        thread["tags"] = " ".join(thread["tags"])
+    else:
+        del thread["tags"]
+
+    return render_template("edit_thread.html", thread=thread)
+
+
+@app.route("/update_thread", methods=["POST"])
+def update_thread():
+    thread_id = request.form["thread_id"]
+    title = request.form["title"]
+    body = request.form["body"]
+    tags = request.form["tags"]
+    user_id = session["user_id"]  # Not used, but could be used to verify ownership
+
+    threads.update_thread(thread_id, title, body, tags)
+
+    return redirect(f"/threads/{thread_id}")
 
 
 @app.route("/register")

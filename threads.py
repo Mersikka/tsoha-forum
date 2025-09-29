@@ -27,7 +27,12 @@ def get_threads():
 def get_thread(thread_id):
     thread_rows = db.query(
         """
-        SELECT threads.title, threads.body, threads.created_at, users.username
+        SELECT threads.id,
+               threads.title,
+               threads.body,
+               threads.created_at,
+               users.id user_id,
+               users.username
         FROM threads
         JOIN users ON threads.user_id = users.id
         WHERE threads.id = ?
@@ -55,5 +60,23 @@ def get_thread(thread_id):
         "body": thread["body"],
         "username": thread["username"],
         "created_at": thread["created_at"],
+        "user_id": thread["user_id"],
+        "id": thread["id"],
         "tags": tags,
     }
+
+
+def update_thread(thread_id, title, body, tags):
+    sql = """UPDATE threads
+             SET title = ?, body = ?
+             WHERE id = ?"""
+    db.execute(sql, [title, body, thread_id])
+
+    db.execute("DELETE FROM thread_tags WHERE thread_id = ?", [thread_id])
+    tags = tags.split(" ")
+    re_pattern = r"^#[A-Za-z0-9_\-ÅÄÖåäöÆØæø]+$"
+    if len(tags) > 0:
+        for tag in tags:
+            if bool(fullmatch(re_pattern, tag)):
+                tag_id = db.get_or_create_tag(tag)
+                db.link_tag_to_thread(thread_id, tag_id)

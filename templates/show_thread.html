@@ -7,6 +7,11 @@
 
 <body>
   <h1>{{  thread["title"]  }}</h1>
+  {% if session["user_id"] == thread["user_id"] %}
+  <p>
+    <a href="/edit_thread/{{  thread["id"]  }}">Muokkaa</a>
+  </p>
+  {% endif %}
   <p>Luonut: {{  thread["username"]  }}</p>
   <p>{{  thread["created_at"]  }}</p>
   <p>
