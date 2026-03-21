@@ -1,8 +1,9 @@
 import sqlite3
-from flask import Flask
-from flask import redirect, render_template, request, session
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+
+from flask import Flask, redirect, render_template, request, session
+from werkzeug.security import check_password_hash, generate_password_hash
+
 import config
 import db
 import threads

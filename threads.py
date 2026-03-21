@@ -1,5 +1,6 @@
-import db
 from re import fullmatch
+
+import db
 
 
 def add_thread(title, body, tags, user_id):
