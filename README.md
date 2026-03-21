@@ -8,7 +8,7 @@ Sovellus on Redditin kaltainen foorumi, jossa
 - [ ] Kommenttien yhteydessä näkyy aikaleima.
 - [ ] Käyttäjä voi lisätä kuvia aloituksiin.
 - [X] Käyttäjä näkee itse ja muiden lisäämät langat.
-- [ ] Käyttäjä voi etsiä lankoja hakusanoin tai tägein.
+- [X] Käyttäjä voi etsiä lankoja hakusanoin tai tägein.
 - [ ] Sovelluksessa on käyttäjäsivut, jossa näkee aloitetut langat, kommentit sekä saatujen tykkäysten yhteismäärän.
 - [X] Käyttäjä voi luokitella lankoja tägeillä.
 - [ ] Käyttäjä voi kommentoida omia ja muiden tekemiä lankoja, sekä tykätä aloituksista ja kommenteista.
