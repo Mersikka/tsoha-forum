@@ -92,3 +92,25 @@ def delete_thread(thread_id):
         WHERE id NOT IN (SELECT tag_id FROM thread_tags)
     """
     )
+
+
+def find_threads(search):
+    sql = """
+        SELECT
+            t.id,
+            t.title,
+            t.body,
+            t.user_id,
+            t.created_at,
+            GROUP_CONCAT(DISTINCT ts.tag_name), "," AS tags
+        FROM threads AS t
+        LEFT JOIN thread_tags AS tt ON tt.thread_id = t.id
+        LEFT JOIN tags AS ts ON ts.id = tt.tag_id
+        WHERE
+            LOWER(t.title) LIKE LOWER(:query)
+            OR LOWER(t.body) LIKE LOWER(:query)
+            OR LOWER(ts.tag_name) LIKE LOWER(:query)
+        GROUP BY t.id, t.title, t.body, t.user_id, t.created_at
+        ORDER BY t.created_at DESC
+    """
+    return db.query(sql, {"query": f"%{search}%"})

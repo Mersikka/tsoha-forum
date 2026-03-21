@@ -18,6 +18,17 @@ def index():
     return render_template("index.html", threads=all_threads)
 
 
+@app.route("/find_thread")
+def find_thread():
+    query = request.args.get("query")
+    if query:
+        results = threads.find_threads(query)
+    else:
+        query = ""
+        results = []
+    return render_template("find_thread.html", query=query, results=results)
+
+
 @app.route("/threads/<int:thread_id>")
 def show_thread(thread_id):
     thread = threads.get_thread(thread_id)

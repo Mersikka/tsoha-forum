@@ -21,14 +21,15 @@
 
   <p>
     <a href="/new_thread">Uusi lanka</a>
+    <a href="/find_thread">Etsi lanka</a>
   </p>
 
   <h2>Ilmoitukset</h2>
-    <ul>
-      {% for thread in threads %}
-      <li><a href="/threads/{{  thread.id  }}">{{ thread.title }}</a></li>
-      {% endfor %}
-    </ul>
+  <ul>
+    {% for thread in threads %}
+    <li><a href="/threads/{{  thread.id  }}">{{ thread.title }}</a></li>
+    {% endfor %}
+  </ul>
 </body>
 
 </html>

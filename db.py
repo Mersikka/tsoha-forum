@@ -10,7 +10,7 @@ def get_connection():
     return con
 
 
-def execute(sql, params):
+def execute(sql, params=None):
     if not params:
         params = []
     con = get_connection()
@@ -24,7 +24,7 @@ def last_insert_id():
     return g.last_insert_id
 
 
-def query(sql, params):
+def query(sql, params=None):
     if not params:
         params = []
     con = get_connection()
