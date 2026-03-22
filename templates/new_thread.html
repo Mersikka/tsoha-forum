@@ -10,15 +10,16 @@
   <form action="/create_thread" method="post">
     <p>
       Otsikko: <br />
-      <input type="text" name="title" size="70"/>
+      <input type="text" name="title" size="70" maxlength="100" />
     </p>
     <p>
       Leipäteksti: <br />
-      <textarea name="body" rows="15" cols="70"></textarea>
+      <textarea name="body" rows="15" cols="70" maxlength="5000"></textarea>
     </p>
     <p>
       Avainsanat: <br />
-      <input type="text" name="tags" size="35" maxlength="35" placeholder="#kissat #videopelit #urheilu"/>
+      <input type="text" name="tags" size="35" maxlength="100" placeholder="#kissat #videopelit #urheilu"
+        pattern="\s*#\S+(?:\s+#\S+)*\s*" />
     </p>
     <input type="submit" value="Luo lanka" />
   </form>

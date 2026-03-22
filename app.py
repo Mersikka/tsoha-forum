@@ -1,7 +1,8 @@
+import re
 import sqlite3
 from datetime import datetime, timezone
 
-from flask import Flask, abort, redirect, render_template, request, session
+from flask import Flask, Response, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import config
@@ -14,6 +15,15 @@ app.secret_key = config.secret_key
 def require_login():
     if "user_id" not in session:
         abort(403)
+
+def is_valid_tag_input(tags):
+    pattern = re.compile(r'^(?:#\S+(?:\s+#\S+)*)?$')
+    if not tags:
+        return True
+    tags = tags.strip()
+    if tags == "":
+        return True
+    return bool(pattern.fullmatch(tags))
 
 @app.route("/")
 def index():
@@ -66,8 +76,17 @@ def create_thread():
     require_login()
 
     title = request.form["title"]
+    if len(title) > 100:
+        abort(403)
     body = request.form["body"]
+    if len(body) > 5000:
+        abort(403)
     tags = request.form["tags"]
+    if len(tags) > 100:
+        abort(403)
+    if not is_valid_tag_input(tags):
+        abort(Response("Invalid tag input"))
+        
     user_id = session["user_id"]
 
     threads.add_thread(title, body, tags, user_id)
@@ -114,8 +133,16 @@ def update_thread():
         abort(403)
     
     title = request.form["title"]
+    if len(title) > 100:
+        abort(403)
     body = request.form["body"]
+    if len(body) > 5000:
+        abort(403)
     tags = request.form["tags"]
+    if len(tags) > 100:
+        abort(403)
+    if not is_valid_tag_input(tags):
+        abort(Response("Invalid tag input"))
 
     threads.update_thread(thread_id, title, body, tags)
 
