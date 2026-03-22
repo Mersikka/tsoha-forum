@@ -9,7 +9,8 @@
   <h1>Foorumi Tsoha</h1>
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }}, id-numerosi on {{ session.user_id }}
+    Olet kirjautunut nimellä <a href="/users/{{ session.user_id }}">{{ session.username }}</a>, id-numerosi on {{
+    session.user_id }}
   </p>
 
   <p>
