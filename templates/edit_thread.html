@@ -10,7 +10,7 @@
   <form action="/update_thread" method="post">
     <p>
       Otsikko: <br />
-      <input type="text" name="title" value="{{  thread[" title"] }}" size="70" maxlength="100" />
+      <input type="text" name="title" value="{{ thread['title'] }}" size="70" maxlength="10000" />
     </p>
     <p>
       Leipäteksti: <br />
@@ -18,14 +18,14 @@
     </p>
     <p>
       Avainsanat: <br />
-      <input type="text" name="tags" value="{{  thread[" tags"] }}" size="35" maxlength="100"
+      <input type="text" name="tags" value="{{ thread['tags'] }}" size="35" maxlength="100"
         placeholder="#kissat #videopelit #urheilu" pattern="\s*#\S+(?:\s+#\S+)*\s*" />
     </p>
-    <input type="hidden" name="thread_id" value="{{  thread[" id"] }}" />
+    <input type="hidden" name="thread_id" value="{{ thread['id'] }}" />
     <div>
       <input class="button" type="submit" value="Päivitä lankaa" />
-      <a id="back" class="button" href="/threads/{{  thread[" id"] }}">Peruuta</a>
-      <a id="delete" class="button" href="/delete_thread/{{  thread[" id"] }}">Poista lanka</a>
+      <a id="back" class="button" href="/threads/{{ thread['id'] }}">Peruuta</a>
+      <a id="delete" class="button" href="/delete_thread/{{ thread['id'] }}">Poista lanka</a>
     </div>
   </form>
 </body>
