@@ -33,7 +33,7 @@ def find_thread():
 def show_thread(thread_id):
     thread = threads.get_thread(thread_id)
     if not thread:
-        abort(500)
+        abort(404)
 
     # Convert thread["created_at"] to local time
     local_time = datetime.now().astimezone()
@@ -72,7 +72,7 @@ def create_thread():
 def edit_thread(thread_id):
     thread = threads.get_thread(thread_id)
     if not thread:
-        abort(500)
+        abort(404)
     if thread["user_id"] != session["user_id"]:
         abort(403)
 
@@ -98,7 +98,7 @@ def update_thread():
 
     thread = threads.get_thread(thread_id)
     if not thread:
-        abort(500)
+        abort(404)
     if thread["user_id"] != session["user_id"]:
         abort(403)
     
@@ -115,7 +115,7 @@ def update_thread():
 def delete_thread(thread_id):
     thread = threads.get_thread(thread_id)
     if not thread:
-        abort(500)
+        abort(404)
     if thread["user_id"] != session["user_id"]:
         abort(403)
 
