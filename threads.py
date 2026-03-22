@@ -76,11 +76,10 @@ def update_thread(thread_id, title, body, tags):
     db.execute("DELETE FROM thread_tags WHERE thread_id = ?", [thread_id])
     tags = tags.split(" ")
     re_pattern = r"^#[A-Za-z0-9_\-ÅÄÖåäöÆØæø]+"
-    if len(tags) > 0:
-        for tag in tags:
-            if bool(fullmatch(re_pattern, tag)):
-                tag_id = db.get_or_create_tag(tag)
-                db.link_tag_to_thread(thread_id, tag_id)
+    for tag in tags:
+        if bool(fullmatch(re_pattern, tag)):
+            tag_id = db.get_or_create_tag(tag)
+            db.link_tag_to_thread(thread_id, tag_id)
 
 
 def delete_thread(thread_id):
