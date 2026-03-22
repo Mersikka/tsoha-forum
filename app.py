@@ -76,17 +76,15 @@ def create_thread():
     require_login()
 
     title = request.form["title"]
-    if len(title) > 100:
+    if len(title) > 100 or not title:
         abort(403)
     body = request.form["body"]
-    if len(body) > 5000:
+    if len(body) > 5000 or not body:
         abort(403)
     tags = request.form["tags"]
-    if len(tags) > 100:
+    if len(tags) > 100 or not is_valid_tag_input(tags):
         abort(403)
-    if not is_valid_tag_input(tags):
-        abort(Response("Invalid tag input"))
-        
+
     user_id = session["user_id"]
 
     threads.add_thread(title, body, tags, user_id)
@@ -133,10 +131,10 @@ def update_thread():
         abort(403)
     
     title = request.form["title"]
-    if len(title) > 100:
+    if len(title) > 100 or not title:
         abort(403)
     body = request.form["body"]
-    if len(body) > 5000:
+    if len(body) > 5000 or not body:
         abort(403)
     tags = request.form["tags"]
     if len(tags) > 100:

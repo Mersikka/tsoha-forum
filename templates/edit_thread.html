@@ -10,11 +10,11 @@
   <form action="/update_thread" method="post">
     <p>
       Otsikko: <br />
-      <input type="text" name="title" value="{{ thread['title'] }}" size="70" maxlength="100" />
+      <input required type="text" name="title" value="{{ thread['title'] }}" size="70" maxlength="100" />
     </p>
     <p>
       Leipäteksti: <br />
-      <textarea name="body" rows="15" cols="70" maxlength="5000">{{ thread["body"] }}</textarea>
+      <textarea required name="body" rows="15" cols="70" maxlength="5000">{{ thread["body"] }}</textarea>
     </p>
     <p>
       Avainsanat: <br />
