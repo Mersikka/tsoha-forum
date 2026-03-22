@@ -1,9 +1,10 @@
 import re
 import sqlite3
+import time
 from datetime import datetime, timezone
 
-from flask import Flask, abort, redirect, render_template, request, session
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Flask, Response, abort, redirect, render_template, request, session
+from werkzeug.security import check_password_hash
 
 import config
 import db
@@ -13,9 +14,11 @@ import users
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+
 def require_login():
     if "user_id" not in session:
         abort(403)
+
 
 def is_valid_tag_input(tags):
     pattern = re.compile(r'^(?:#\S+(?:\s+#\S+)*)?$')
@@ -195,16 +198,17 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
-    password_hash = generate_password_hash(password1)
+        abort(Response("VIRHE: salasanat eivät täsmää. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
+                       headers={"Refresh": "3; url=/register"}))
 
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
+        abort(Response("VIRHE: tunnus on jo varattu. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
+                       headers={"Refresh": "3; url=/register"}))
 
-    return "Tunnus luotu"
+    return Response("Tunnus luotu. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
+                    headers={"Refresh": "3; url=/"})
 
 
 @app.route("/login", methods=["GET", "POST"])  # pyright: ignore[reportArgumentType]
@@ -216,17 +220,15 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])[0]
-        user_id = result["id"]
-        password_hash = result["password_hash"]
+        res, user_id = users.check_credentials(username, password)
 
-        if check_password_hash(password_hash, password):
+        if res:
             session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
         else:
-            return "VIRHE: väärä tunnus tai salasana"
+            abort(Response("VIRHE: väärä tunnus tai salasana. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
+                           headers={"Refresh": "3; url=/login"}))
 
 
 @app.route("/logout")
