@@ -11,20 +11,25 @@
   <p>
     Olet kirjautunut nimellä {{ session.username }}, id-numerosi on {{ session.user_id }}
   </p>
-  {% endif %}
 
   <p>
-    <a href="/login">Kirjaudu sisään</a>
-    <a href="/register">Luo tunnus</a>
     <a href="/logout">Kirjaudu ulos</a>
   </p>
-
   <p>
     <a href="/new_thread">Uusi lanka</a>
     <a href="/find_thread">Etsi lanka</a>
   </p>
+  {% else %}
+  <p>
+    <a href="/login">Kirjaudu sisään</a>
+    <a href="/register">Luo tunnus</a>
+  </p>
 
-  <h2>Ilmoitukset</h2>
+  <p>
+    <a href="/find_thread">Etsi lanka</a>
+  </p>
+  {% endif %}
+  <h2>Langat</h2>
   <ul>
     {% for thread in threads %}
     <li><a href="/threads/{{  thread.id  }}">{{ thread.title }}</a></li>
