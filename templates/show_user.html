@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Käyttäjä {{ user["username"] }}</title>
+</head>
+
+<body>
+  <h1>Käyttäjä {{ user["username"] }}</h1>
+  <p id="karma">Karma: TO-DO</p>
+
+  {% if session["user_id"] == user["id"] %}
+  <p id="edit_user" class="button">
+    <a href="/edit_user/{{ user['id'] }}">Muokkaa käyttäjätietoja</a>
+  </p>
+  {% endif %}
+  {% if threads_by_user | count == 0 %}
+  <p>
+    Käyttäjä ei ole aloittanut lankoja.
+  </p>
+  {% elif threads_by_user | count == 1 %}
+  <p>
+    Käyttäjä on aloittanut {{ threads_by_user | count }} langan.
+  </p>
+  {% else %}
+  <p>
+    Käyttäjä on aloittanut {{ threads_by_user | count }} lankaa.
+  </p>
+  {% endif %}
+  {% if threads_by_user | count != 0 %}
+  <h2>Käyttäjän langat</h2>
+  <ul>
+    {% for thread in threads_by_user %}
+    <li>
+      <a href="/threads/{{ thread.id }}">{{ thread.title }}</a>
+      {% if thread.tags %}
+      <ul id="tag-list">
+        {% for tag in thread.tags %}
+        <li id="tag">
+          <a href="/find_thread?query={{ tag | tag_text }}">{{ tag }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <p>
+    <a href="/">Takaisin</a>
+  </p>
+</body>
+
+</html>

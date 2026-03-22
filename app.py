@@ -2,12 +2,13 @@ import re
 import sqlite3
 from datetime import datetime, timezone
 
-from flask import Flask, Response, abort, redirect, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import config
 import db
 import threads
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -24,6 +25,12 @@ def is_valid_tag_input(tags):
     if tags == "":
         return True
     return bool(pattern.fullmatch(tags))
+
+
+@app.template_filter('tag_text')
+def tag_text_filter(t):
+    return t[1:]
+
 
 @app.route("/")
 def index():
@@ -57,6 +64,17 @@ def show_thread(thread_id):
     thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
 
     return render_template("show_thread.html", thread=thread)
+
+
+@app.route("/users/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    threads_by_user = users.get_threads_by_user(user_id)
+    if not threads_by_user:
+        threads_by_user = []
+    return render_template("show_user.html", user=user, threads_by_user=threads_by_user)
 
 
 @app.route("/threads")
