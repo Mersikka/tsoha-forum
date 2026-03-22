@@ -11,6 +11,9 @@ import threads
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def require_login():
+    if "user_id" not in session:
+        abort(403)
 
 @app.route("/")
 def index():
@@ -53,11 +56,15 @@ def threads_redirect():
 
 @app.route("/new_thread")
 def new_thread():
+    require_login()
+
     return render_template("new_thread.html")
 
 
 @app.route("/create_thread", methods=["POST"])
 def create_thread():
+    require_login()
+
     title = request.form["title"]
     body = request.form["body"]
     tags = request.form["tags"]
@@ -70,6 +77,8 @@ def create_thread():
 
 @app.route("/edit_thread/<int:thread_id>")
 def edit_thread(thread_id):
+    require_login()
+
     thread = threads.get_thread(thread_id)
     if not thread:
         abort(404)
@@ -94,6 +103,8 @@ def edit_thread(thread_id):
 
 @app.route("/update_thread", methods=["POST"])
 def update_thread():
+    require_login()
+
     thread_id = request.form["thread_id"]
 
     thread = threads.get_thread(thread_id)
@@ -113,6 +124,8 @@ def update_thread():
 
 @app.route("/delete_thread/<int:thread_id>", methods=["GET", "POST"])  # pyright: ignore[reportArgumentType]
 def delete_thread(thread_id):
+    require_login()
+
     thread = threads.get_thread(thread_id)
     if not thread:
         abort(404)
@@ -177,6 +190,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["user_id"]
-    del session["username"]
+    if "user_id" in session:
+        del session["user_id"]
+        del session["username"]
     return redirect("/")
