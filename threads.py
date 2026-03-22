@@ -10,7 +10,7 @@ def add_thread(title, body, tags, user_id):
 
     # Link tags to thread
     thread_id = db.last_insert_id()
-    tags = tags.split(" ")
+    tags = tags.split()
     re_pattern = r"^#[A-Za-z0-9_\-ÅÄÖåäöÆØæø]+"
     if len(tags) > 0:
         for tag in tags:
