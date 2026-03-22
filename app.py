@@ -1,7 +1,7 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import config
@@ -32,13 +32,16 @@ def find_thread():
 @app.route("/threads/<int:thread_id>")
 def show_thread(thread_id):
     thread = threads.get_thread(thread_id)
+    if not thread:
+        abort(500)
 
     # Convert thread["created_at"] to local time
     local_time = datetime.now().astimezone()
     utc_offset = local_time.utcoffset()
-    thread["created_at"] = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S")
-    thread["created_at"] = thread["created_at"] + utc_offset
-    thread["created_at"] = thread["created_at"].strftime(r"%Y-%m-%d %H:%M:%S")
+    created_time = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    if utc_offset:
+        created_time = created_time + utc_offset
+    thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
 
     return render_template("show_thread.html", thread=thread)
 
@@ -68,13 +71,18 @@ def create_thread():
 @app.route("/edit_thread/<int:thread_id>")
 def edit_thread(thread_id):
     thread = threads.get_thread(thread_id)
+    if not thread:
+        abort(500)
+    if thread["user_id"] != session["user_id"]:
+        abort(403)
 
     # Convert thread["created_at"] to local time
     local_time = datetime.now().astimezone()
     utc_offset = local_time.utcoffset()
-    thread["created_at"] = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S")
-    thread["created_at"] = thread["created_at"] + utc_offset
-    thread["created_at"] = thread["created_at"].strftime(r"%Y-%m-%d %H:%M:%S")
+    created_time = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    if utc_offset:
+        created_time = created_time + utc_offset
+    thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
 
     if thread["tags"]:
         thread["tags"] = " ".join(thread["tags"])
@@ -87,20 +95,31 @@ def edit_thread(thread_id):
 @app.route("/update_thread", methods=["POST"])
 def update_thread():
     thread_id = request.form["thread_id"]
+
+    thread = threads.get_thread(thread_id)
+    if not thread:
+        abort(500)
+    if thread["user_id"] != session["user_id"]:
+        abort(403)
+    
     title = request.form["title"]
     body = request.form["body"]
     tags = request.form["tags"]
-    user_id = session["user_id"]  # Not used, but could be used to verify ownership
 
     threads.update_thread(thread_id, title, body, tags)
 
     return redirect(f"/threads/{thread_id}")
 
 
-@app.route("/delete_thread/<int:thread_id>", methods=["GET", "POST"])
+@app.route("/delete_thread/<int:thread_id>", methods=["GET", "POST"])  # pyright: ignore[reportArgumentType]
 def delete_thread(thread_id):
+    thread = threads.get_thread(thread_id)
+    if not thread:
+        abort(500)
+    if thread["user_id"] != session["user_id"]:
+        abort(403)
+
     if request.method == "GET":
-        thread = threads.get_thread(thread_id)
         return render_template("delete_thread.html", thread=thread)
 
     if request.method == "POST":
@@ -134,7 +153,7 @@ def create():
     return "Tunnus luotu"
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])  # pyright: ignore[reportArgumentType]
 def login():
     if request.method == "GET":
         return render_template("login.html")
