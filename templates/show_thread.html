@@ -27,6 +27,26 @@
   <p>
     <a href="/">Takaisin</a>
   </p>
+  <div>
+    {% if "user_id" in session %}
+    {% if thread.has_user_voted %}
+    <form action="/vote" method="post">
+      <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
+      <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+      <input type="hidden" name="remove_vote" value="1" />
+      <input class="button" type="submit" value="Poista ääni" />
+    </form>
+    {% else  %}
+    <form action="/vote" method="post">
+      <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
+      <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+      <input type="hidden" name="remove_vote" value="" />
+      <input class="button" type="submit" value="Äänestä" />
+    </form>
+    {% endif %}
+    {% endif %}
+    <p>{{ thread.votes }} ääntä</p>
+  </div>
 </body>
 
 </html>

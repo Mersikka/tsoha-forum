@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from flask import Flask, Response, abort, redirect, render_template, request, session
 
+import comments
 import config
 import threads
 import users
@@ -55,6 +56,10 @@ def show_thread(thread_id):
     if not thread:
         abort(404)
 
+    thread["votes"] = threads.get_thread_votes(thread_id)
+    if "user_id" in session:
+        thread["has_user_voted"] = threads.has_user_voted_thread(thread_id, session["user_id"])
+    
     # Convert thread["created_at"] to local time
     local_time = datetime.now().astimezone()
     utc_offset = local_time.utcoffset()
@@ -108,6 +113,22 @@ def create_thread():
     threads.add_thread(title, body, tags, user_id)
 
     return redirect("/")
+
+
+@app.route("/vote", methods=["POST"])
+def vote():
+    require_login()
+
+    remove_vote = bool(request.form["remove_vote"])
+    voter_id = request.form["voter_id"]
+    thread_id = request.form["thread_id"]
+
+    if remove_vote:
+        threads.unvote_thread(thread_id, voter_id)
+    else:
+        threads.vote_thread(thread_id, voter_id)
+
+    return redirect(f"/threads/{thread_id}")
 
 
 @app.route("/edit_thread/<int:thread_id>")
