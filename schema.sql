@@ -24,7 +24,13 @@ CREATE TABLE comments (
     id INTEGER PRIMARY KEY,
     body TEXT,
     user_id INTEGER REFERENCES users,
+    thread_id INTEGER REFERENCES threads(id) ON DELETE CASCADE,
+    parent_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    CHECK (
+        (thread_id IS NOT NULL AND parent_id IS NULL) OR
+        (thread_id IS NULL AND parent_id IS NOT NULL)
+    )
 );
 
 CREATE TABLE tags (
