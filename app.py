@@ -79,7 +79,9 @@ def show_user(user_id):
     threads_by_user = users.get_threads_by_user(user_id)
     if not threads_by_user:
         threads_by_user = []
-    return render_template("show_user.html", user=user, threads_by_user=threads_by_user)
+    votes_received = users.get_votes_received_by_user(user_id)
+    
+    return render_template("show_user.html", user=user, threads_by_user=threads_by_user, total_votes=votes_received)
 
 
 @app.route("/threads")

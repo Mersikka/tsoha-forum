@@ -119,7 +119,7 @@ def find_threads(search):
 def get_thread_votes(thread_id):
     rows = db.query(
         """
-        SELECT COUNT(*) AS votes
+        SELECT COUNT(id) AS votes
         FROM votes
         WHERE thread_id = ?
     """,
