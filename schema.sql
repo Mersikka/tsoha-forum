@@ -57,3 +57,17 @@ CREATE TABLE votes (
     UNIQUE(voter_id, comment_id)
 );
 
+
+-- Count votes per thread
+CREATE INDEX votes_thread_id ON votes(thread_id)
+WHERE thread_id IS NOT NULL;
+
+-- Count votes per comment
+CREATE INDEX votes_comment_id ON votes(comment_id)
+WHERE comment_id IS NOT NULL;
+
+-- Count total votes a user has received
+CREATE INDEX thread_id_to_user_id ON threads(user_id);
+CREATE INDEX comment_id_to_user_id ON comments(user_id);
+CREATE INDEX vote_id_to_thread_id ON votes(thread_id);
+CREATE INDEX vote_id_to_comment_id ON votes(comment_id);
