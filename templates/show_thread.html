@@ -45,7 +45,11 @@
     </form>
     {% endif %}
     {% endif %}
+    {% if thread.votes == 1 %}
+    <p>{{ thread.votes }} ääni</p>
+    {% else %}
     <p>{{ thread.votes }} ääntä</p>
+    {% endif %}
   </div>
 </body>
 
