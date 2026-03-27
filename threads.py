@@ -34,6 +34,8 @@ def get_thread(thread_id):
                threads.asset_id,
                threads.created_at,
                users.id user_id,
+               threads.votes,
+               threads.number_of_comments,
                users.username
         FROM threads
         JOIN users ON threads.user_id = users.id
@@ -64,6 +66,8 @@ def get_thread(thread_id):
         "username": thread["username"],
         "created_at": thread["created_at"],
         "user_id": thread["user_id"],
+        "votes": thread["votes"],
+        "number_of_comments": thread["number_of_comments"],
         "id": thread["id"],
         "tags": tags,
     }
@@ -116,17 +120,6 @@ def find_threads(search):
     """
     return db.query(sql, {"query": f"%{search}%"})
 
-def get_thread_votes(thread_id):
-    rows = db.query(
-        """
-        SELECT COUNT(id) AS votes
-        FROM votes
-        WHERE thread_id = ?
-    """,
-    [thread_id],
-    )
-
-    return rows[0]["votes"]
 
 def vote_thread(thread_id, user_id):
     db.execute(
@@ -137,6 +130,7 @@ def vote_thread(thread_id, user_id):
     [user_id, thread_id],
     )
 
+
 def unvote_thread(thread_id, user_id):
     db.execute(
         """
@@ -145,6 +139,7 @@ def unvote_thread(thread_id, user_id):
     """,
     [user_id, thread_id],
     )
+
 
 def has_user_voted_thread(thread_id, user_id):
     rows = db.query(

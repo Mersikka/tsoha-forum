@@ -56,7 +56,6 @@ def show_thread(thread_id):
     if not thread:
         abort(404)
 
-    thread["votes"] = threads.get_thread_votes(thread_id)
     if "user_id" in session:
         thread["has_user_voted"] = threads.has_user_voted_thread(thread_id, session["user_id"])
     
@@ -79,9 +78,8 @@ def show_user(user_id):
     threads_by_user = users.get_threads_by_user(user_id)
     if not threads_by_user:
         threads_by_user = []
-    votes_received = users.get_votes_received_by_user(user_id)
     
-    return render_template("show_user.html", user=user, threads_by_user=threads_by_user, total_votes=votes_received)
+    return render_template("show_user.html", user=user, threads_by_user=threads_by_user)
 
 
 @app.route("/threads")

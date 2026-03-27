@@ -7,7 +7,7 @@
 
 <body>
   <h1>Käyttäjä {{ user["username"] }}</h1>
-  <p id="karma">Karma: {{ total_votes }}</p>
+  <p id="karma">Karma: {{ user["votes_received"] }}</p>
 
   {% if session["user_id"] == user["id"] %}
   <p id="edit_user" class="button">

@@ -8,7 +8,8 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     profile_picture INTEGER REFERENCES assets(id),
-    password_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL,
+    votes_received INTEGER DEFAULT 0
 );
 
 CREATE TABLE threads (
@@ -16,21 +17,21 @@ CREATE TABLE threads (
     title TEXT NOT NULL,
     body TEXT,
     asset_id INTEGER REFERENCES assets(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users,
+    user_id INTEGER REFERENCES users(id),
+    votes INTEGER DEFAULT 0,
+    number_of_comments INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE comments (
     id INTEGER PRIMARY KEY,
-    body TEXT,
-    user_id INTEGER REFERENCES users,
+    body TEXT NOT NULL,
+    user_id INTEGER REFERENCES users(id),
     thread_id INTEGER REFERENCES threads(id) ON DELETE CASCADE,
-    parent_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
+    parent_comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
+    votes INTEGER DEFAULT 0,
+    number_of_children INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    CHECK (
-        (thread_id IS NOT NULL AND parent_id IS NULL) OR
-        (thread_id IS NULL AND parent_id IS NOT NULL)
-    )
 );
 
 CREATE TABLE tags (
@@ -57,6 +58,127 @@ CREATE TABLE votes (
     UNIQUE(voter_id, comment_id)
 );
 
+-- Triggers for counting comment votes
+CREATE TRIGGER
+    increment_comment_votes
+AFTER INSERT ON
+    votes
+WHEN
+    NEW.thread_id IS NULL
+BEGIN
+    UPDATE
+        comments
+    SET
+        votes = votes + 1
+    WHERE
+        id = NEW.comment_id;
+    UPDATE
+        users
+    SET
+        votes_received = votes_received + 1
+    FROM
+        (
+            SELECT
+                c.user_id
+            FROM
+                comments AS c
+            WHERE
+                NEW.comment_id = c.id
+        ) AS user_id
+    WHERE
+        id = user_id;
+END;
+
+CREATE TRIGGER
+    decrement_comment_votes
+AFTER DELETE ON
+    votes
+WHEN
+    OLD.thread_id IS NULL
+BEGIN
+    UPDATE
+        comments
+    SET
+        votes = votes - 1
+    WHERE
+        id = OLD.comment_id;
+    UPDATE
+        users
+    SET
+        votes_received = votes_received - 1
+    FROM
+        (
+            SELECT
+                c.user_id
+            FROM
+                comments AS c
+            WHERE
+                OLD.comment_id = c.id
+        ) AS user_id
+    WHERE
+        id = user_id;
+END;
+
+-- Triggers for counting thread votes
+CREATE TRIGGER
+    increment_thread_votes
+AFTER INSERT ON
+    votes
+WHEN
+    NEW.comment_id IS NULL
+BEGIN
+    UPDATE
+        threadsSovellusta testattu suurella tietomäärällä ja raportoitu tulokset
+    SET
+        votes = votes + 1
+    WHERE
+        id = NEW.thread_id;
+    UPDATE
+        users
+    SET
+        votes_received = votes_received + 1
+    FROM
+        (
+            SELECT
+                t.user_id
+            FROM
+                threads AS t
+            WHERE
+                NEW.thread_id = t.id
+        ) AS user_id
+    WHERE
+        id = user_id;
+END;
+
+CREATE TRIGGER
+    decrement_thread_votes
+AFTER DELETE ON
+    votes
+WHEN
+    OLD.comment_id IS NULL
+BEGIN
+    UPDATE
+        threads
+    SET
+        votes = votes - 1
+    WHERE
+        id = OLD.thread_id;
+    UPDATE
+        users
+    SET
+        votes_received = votes_received - 1
+    FROM
+        (
+            SELECT
+                t.user_id
+            FROM
+                threads AS t
+            WHERE
+                OLD.thread_id = t.id
+        ) AS user_id
+    WHERE
+        id = user_id;
+END;
 
 -- Count votes per thread
 CREATE INDEX votes_thread_id ON votes(thread_id)

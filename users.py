@@ -29,7 +29,8 @@ def get_user(user_id):
     user_rows = db.query(
         """
         SELECT id,
-               username
+               username,
+               votes_received
         FROM users
         WHERE id = ?
         """,
@@ -62,22 +63,3 @@ def get_threads_by_user(user_id):
     if not thread_ids:
         return None
     return [threads.get_thread(id) for id in thread_ids]
-
-
-def get_votes_received_by_user(user_id):
-    rows = db.query(
-            """
-            SELECT
-                (SELECT COUNT(*)
-                 FROM votes AS v
-                 JOIN threads AS t ON v.thread_id = t.id
-                 WHERE t.user_id = :user_id) +
-                (SELECT COUNT(*)
-                 FROM votes AS v
-                 JOIN comments AS c ON v.comment_id = c.id
-                 WHERE c.user_id = :user_id) AS total_votes
-        """,
-        {"user_id": f"{user_id}"},
-        )
-
-    return rows[0]["total_votes"]
