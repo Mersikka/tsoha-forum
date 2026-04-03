@@ -128,7 +128,7 @@ WHEN
     NEW.comment_id IS NULL
 BEGIN
     UPDATE
-        threadsSovellusta testattu suurella tietomäärällä ja raportoitu tulokset
+        threads
     SET
         votes = votes + 1
     WHERE
