@@ -9,7 +9,7 @@ import config
 import threads
 import users
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 app.secret_key = config.secret_key
 
 

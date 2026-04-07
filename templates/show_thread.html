@@ -74,7 +74,7 @@
       {% for parent in thread.comments %}
       <li class="">
         <details open>
-          <summary class="hide_comment">Piilota</summary>
+          <summary class="hide_comment"></summary>
           <p class="commenter"><a href="/users/{{ parent.user_id }}">{{ parent.username }}</a></p>
           <p>{{ parent.body }}</p>
           <p>{{ parent.created_at_local }}</p>

@@ -1,0 +1,7 @@
+.hide_comment::after {
+  content: "Näytä";
+}
+
+details[open] > .hide_comment::after {
+  content: "Piilota";
+}
