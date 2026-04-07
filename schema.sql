@@ -180,6 +180,33 @@ BEGIN
         id = user_id;
 END;
 
+-- Triggers for counting comments on a thread
+CREATE TRIGGER
+    increment_comment_count
+AFTER INSERT ON
+    comments
+BEGIN
+    UPDATE
+        threads
+    SET
+        number_of_comments = number_of_comments + 1
+    WHERE
+        id = NEW.thread_id;
+END;
+
+CREATE TRIGGER
+    decrement_comment_count
+AFTER DELETE ON
+    comments
+BEGIN
+    UPDATE
+        threads
+    SET
+        number_of_comments = number_of_comments - 1
+    WHERE
+        id = OLD.thread_id;
+END;
+
 -- Count votes per thread
 CREATE INDEX votes_thread_id ON votes(thread_id)
 WHERE thread_id IS NOT NULL;
