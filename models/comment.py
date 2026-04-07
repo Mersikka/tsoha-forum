@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 
@@ -20,6 +20,7 @@ class ChildComment:
                  user_id: int,
                  thread_id: int,
                  parent_comment_id: int | None,
+                 votes: int,
                  created_at: str,
                  username: str,
              ):
@@ -28,6 +29,7 @@ class ChildComment:
         self.user_id = user_id
         self.thread_id = thread_id
         self.parent_comment_id = parent_comment_id
+        self.votes = votes
         self.created_at = created_at
         local_time = datetime.now().astimezone()
         utc_offset = local_time.utcoffset()
@@ -41,6 +43,6 @@ class ChildComment:
 
 
 
-@dataclass
+@dataclass(init=False)
 class ParentComment(ChildComment):
-    children: list[ChildComment]
+    children: list[ChildComment] = field(default_factory=list)

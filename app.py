@@ -57,15 +57,23 @@ def show_thread(thread_id):
         abort(404)
 
     if "user_id" in session:
-        thread["has_user_voted"] = threads.has_user_voted_thread(thread_id, session["user_id"])
+        thread["has_user_voted"] = threads.has_user_voted_thread(
+            thread_id, session["user_id"]
+        )
+        thread["voted_comments"] = comments.comments_user_has_voted(
+            session["user_id"]
+        )
     
-    # Convert thread["created_at"] to local time
     local_time = datetime.now().astimezone()
     utc_offset = local_time.utcoffset()
-    created_time = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    created_time = datetime.strptime(
+        thread["created_at"], r"%Y-%m-%d %H:%M:%S"
+    ).replace(tzinfo=timezone.utc)
     if utc_offset:
         created_time = created_time + utc_offset
     thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
+
+    thread["comments"] = comments.collect_comments(thread_id)
 
     return render_template("show_thread.html", thread=thread)
 
@@ -78,7 +86,7 @@ def show_user(user_id):
     threads_by_user = users.get_threads_by_user(user_id)
     if not threads_by_user:
         threads_by_user = []
-    
+
     return render_template("show_user.html", user=user, threads_by_user=threads_by_user)
 
 
@@ -115,6 +123,30 @@ def create_thread():
     return redirect("/")
 
 
+@app.route("/create_comment", methods=["POST"])
+def create_comment():
+    require_login()
+
+    body = request.form["body"]
+    thread_id = request.form["thread_id"]
+    parent_comment_id = None
+    if "parent_comment_id" in request.form:
+        parent_comment_id = request.form["parent_comment_id"]
+    user_id = session["user_id"]
+
+    if len(body) > 3000 or not body:
+        abort(403)
+
+    comments.add_comment(
+        user_id=user_id,
+        thread_id=thread_id,
+        body=body,
+        parent_comment_id=parent_comment_id,
+    )
+
+    return redirect(f"/threads/{thread_id}")
+
+
 @app.route("/vote", methods=["POST"])
 def vote():
     require_login()
@@ -127,6 +159,23 @@ def vote():
         threads.unvote_thread(thread_id, voter_id)
     else:
         threads.vote_thread(thread_id, voter_id)
+
+    return redirect(f"/threads/{thread_id}")
+
+
+@app.route("/vote_comment", methods=["POST"])
+def vote_comment():
+    require_login()
+
+    remove_vote = bool(request.form["remove_vote"])
+    voter_id = request.form["voter_id"]
+    comment_id = request.form["comment_id"]
+    thread_id = request.form["thread_id"]
+
+    if remove_vote:
+        comments.unvote_comment(comment_id, voter_id)
+    else:
+        comments.vote_comment(comment_id, voter_id)
 
     return redirect(f"/threads/{thread_id}")
 

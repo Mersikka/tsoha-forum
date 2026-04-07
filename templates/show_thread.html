@@ -51,6 +51,60 @@
     <p>{{ thread.votes }} ääntä</p>
     {% endif %}
   </div>
+  <div>
+    <details>
+      <summary>Kommentoi</summary>
+      <form action="/create_comment" method="post">
+        <label for="body">Kirjoita kommentti</label> <br />
+        <textarea required name="body" rows="10" cols="50" maxlength="3000"></textarea>
+        <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+        <input type="submit" value="Luo kommentti" />
+      </form>
+    </details>
+
+    {% if thread.comments | length != 0 %}
+    <h2>Kommentit</h2>
+    <ul>
+      {% for parent in thread.comments %}
+      <li>
+        <p id="commenter"><a href="/users/{{ parent.user_id }}">{{ parent.username }}</a></p>
+        <p>{{ parent.body }}</p>
+        <p>{{ parent.created_at_local }}</p>
+
+        <div>
+          {% if "user_id" in session %}
+          {% if parent.id in thread.voted_comments %}
+          <form action="/vote_comment" method="post">
+            <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
+            <input type="hidden" name="comment_id" value="{{ parent.id }}" />
+            <input type="hidden" name="remove_vote" value="1" />
+            <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+            <input class="button" type="submit" value="Poista ääni" />
+          </form>
+          {% else  %}
+          <form action="/vote_comment" method="post">
+            <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
+            <input type="hidden" name="comment_id" value="{{ parent.id }}" />
+            <input type="hidden" name="remove_vote" value="" />
+            <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+            <input class="button" type="submit" value="Äänestä" />
+          </form>
+          {% endif %}
+          {% endif %}
+          {% if parent.votes == 1 %}
+          <p>{{ parent.votes }} ääni</p>
+          {% else %}
+          <p>{{ parent.votes }} ääntä</p>
+          {% endif %}
+        </div>
+
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <h2>Ei kommentteja</h2>
+    {% endif %}
+  </div>
 </body>
 
 </html>
