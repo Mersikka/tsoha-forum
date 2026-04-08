@@ -1,3 +1,4 @@
+import math
 import re
 import sqlite3
 from datetime import datetime, timezone
@@ -34,9 +35,20 @@ def tag_text_filter(t):
 
 
 @app.route("/")
-def index():
-    all_threads = threads.get_threads()
-    return render_template("index.html", threads=all_threads)
+@app.route("/<int:page>")
+def index(page=1):
+    page_size = 20
+    thread_count = threads.count_threads()
+    page_count = math.ceil(thread_count / page_size)
+    page_count = max(page_count, 1)
+    
+    if page < 1:
+        return redirect("/1")
+    if page > page_count:
+        return redirect("/" + str(page_count))
+    
+    all_threads = threads.get_threads(page, page_size)
+    return render_template("index.html", threads=all_threads, page=page, page_count=page_count)
 
 
 @app.route("/find_thread")

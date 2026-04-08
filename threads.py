@@ -19,10 +19,16 @@ def add_thread(title, body, tags, user_id, asset_id=None):
                 db.link_tag_to_thread(thread_id, tag_id)
 
 
-def get_threads():
-    sql = "SELECT id, title, created_at FROM threads ORDER BY id DESC"
-
-    return db.query(sql)
+def get_threads(page, page_size):
+    sql = """
+        SELECT id, title, number_of_comments, created_at
+        FROM threads
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+    """
+    limit = page_size
+    offset = page_size * (page-1)
+    return db.query(sql, [limit, offset])
 
 
 def get_thread(thread_id):
@@ -151,3 +157,8 @@ def has_user_voted_thread(thread_id, user_id):
     [thread_id, user_id],
     )
     return bool(rows)
+
+
+def count_threads():
+    rows = db.query("SELECT COUNT(1) FROM threads")
+    return rows[0][0]
