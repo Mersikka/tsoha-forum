@@ -293,9 +293,12 @@ def create():
     except sqlite3.IntegrityError:
         abort(Response("VIRHE: tunnus on jo varattu. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
                        headers={"Refresh": "3; url=/register"}))
-
-    return Response("Tunnus luotu. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
-                    headers={"Refresh": "3; url=/"})
+    res, user_id = users.check_credentials(username, password1)
+    if res:
+        session["user_id"] = user_id
+        session["username"] = username
+        return redirect("/")
+    abort(500)
 
 
 @app.route("/login", methods=["GET", "POST"])  # pyright: ignore[reportArgumentType]
