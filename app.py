@@ -53,27 +53,27 @@ def find_thread():
 @app.route("/threads/<int:thread_id>")
 def show_thread(thread_id):
     thread = threads.get_thread(thread_id)
-    if not thread:
-        abort(404)
-
-    if "user_id" in session:
-        thread["has_user_voted"] = threads.has_user_voted_thread(
-            thread_id, session["user_id"]
-        )
-        thread["voted_comments"] = comments.comments_user_has_voted(
-            session["user_id"]
-        )
+    if thread:
+        if "user_id" in session:
+            thread["has_user_voted"] = threads.has_user_voted_thread(
+                thread_id, session["user_id"]
+            )
+            thread["voted_comments"] = comments.comments_user_has_voted(
+                session["user_id"]
+            )
     
-    local_time = datetime.now().astimezone()
-    utc_offset = local_time.utcoffset()
-    created_time = datetime.strptime(
-        thread["created_at"], r"%Y-%m-%d %H:%M:%S"
-    ).replace(tzinfo=timezone.utc)
-    if utc_offset:
-        created_time = created_time + utc_offset
-    thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
+        local_time = datetime.now().astimezone()
+        utc_offset = local_time.utcoffset()
+        created_time = datetime.strptime(
+            thread["created_at"], r"%Y-%m-%d %H:%M:%S"
+        ).replace(tzinfo=timezone.utc)
+        if utc_offset:
+            created_time = created_time + utc_offset
+        thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
 
-    thread["comments"] = comments.collect_comments(thread_id)
+        thread["comments"] = comments.collect_comments(thread_id)
+    else:
+        abort(404)
 
     return render_template("show_thread.html", thread=thread)
 

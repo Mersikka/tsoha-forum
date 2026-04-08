@@ -29,7 +29,7 @@ def collect_comments(thread_id: str | int) -> list[ParentComment]:
             parent_comments[c.id] = c
 
     for p, cs in parent_to_child.items():
-        parent_comments[p].children = cs
+        parent_comments[p].children = list(cs.values())
 
     return list(parent_comments.values())
 
@@ -55,7 +55,7 @@ def get_comments_on_thread(thread_id):
     if not rows:
         return None
 
-    return [ParentComment(**c) if "parent_comment_id" not in c else ChildComment(**c) for c in rows]
+    return [ParentComment(**c) if not c["parent_comment_id"] else ChildComment(**c) for c in rows]
 
 
 def get_comment(comment_id):

@@ -46,3 +46,26 @@ class ChildComment:
 @dataclass(init=False)
 class ParentComment(ChildComment):
     children: list[ChildComment] = field(default_factory=list)
+
+    def __init__(
+        self,
+        id: int,
+        body: str,
+        user_id: int,
+        thread_id: int,
+        parent_comment_id: int | None,
+        votes: int,
+        created_at: str,
+        username: str,
+    ):
+        super().__init__(
+            id,
+            body,
+            user_id,
+            thread_id,
+            parent_comment_id,
+            votes,
+            created_at,
+            username,
+        )
+        self.children = []

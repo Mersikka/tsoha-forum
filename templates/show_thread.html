@@ -3,10 +3,7 @@
 
 <head>
   <title>{{ thread["title"] }}</title>
-  <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
 <body>
@@ -38,7 +35,7 @@
       <input type="hidden" name="remove_vote" value="1" />
       <input class="button" type="submit" value="Poista ääni" />
     </form>
-    {% else  %}
+    {% else %}
     <form action="/vote" method="post">
       <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
       <input type="hidden" name="thread_id" value="{{ thread.id }}" />
@@ -96,7 +93,7 @@
               <input type="hidden" name="thread_id" value="{{ thread.id }}" />
               <input class="button" type="submit" value="Poista ääni" />
             </form>
-            {% else  %}
+            {% else %}
             <form action="/vote_comment" method="post">
               <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
               <input type="hidden" name="comment_id" value="{{ parent.id }}" />
@@ -143,6 +140,74 @@
             </details>
             {% endif %}
           </div>
+          {% if parent.children | length > 0 %}
+          <section class="child-comments">
+            <h3>Vastaukset</h3>
+            <ul>
+              {% for child in parent.children | reverse %}
+              <li id="{{ child.id }}">
+                <details open>
+                  <summary class="hide_comment"></summary>
+                  <p class="commenter"><a href="/users/{{ parent.user_id }}">{{ parent.username }}</a></p>
+                  <p class="body p">{{ child.body }}</p>
+                  {% if session.user_id == child.user_id %}
+                  <form class="update-comment" action="/update_comment" method="post">
+                    <label for="body">Muokkaa vastausta</label> <br />
+                    <textarea required name="body" rows="10" cols="50" maxlength="3000">{{ child.body }}</textarea>
+                    <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                    <input type="hidden" name="comment_id" value="{{ child.id }}" />
+                    <input type="submit" value="Päivitä vastausta" />
+                  </form>
+                  {% endif %}
+                  <p>{{ child.created_at_local }}</p>
+
+                  <div class="comment-interact">
+                    {% if "user_id" in session %}
+                    <form action="/vote_comment" method="post">
+                      <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
+                      <input type="hidden" name="comment_id" value="{{ child.id }}" />
+                      <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                      {% if child.id in thread.voted_comments %}
+                      <input type="hidden" name="remove_vote" value="1" />
+                      <input class="button" type="submit" value="Poista ääni" />
+                      {% else %}
+                      <input type="hidden" name="remove_vote" value="" />
+                      <input class="button" type="submit" value="Äänestä" />
+                      {% endif %}
+                    </form>
+                    {% if session.user_id == child.user_id %}
+                    <input class="edit-checkbox" id="edit-checkbox-{{ child.id }}" name="edit-checkbox"
+                      type="checkbox" />
+                    <label for="edit-checkbox-{{ child.id }}">Muokkaa</label>
+
+                    <button command="show-modal" commandfor="delete-reply-dialog">
+                      Poista
+                    </button>
+                    <dialog id="delete-reply-dialog">
+                      <p>
+                        Haluatko varmasti poistaa vastauksen?
+                      </p>
+                      <button commandfor="delete-reply-dialog" command="close">Peruuta</button>
+                      <form action="/delete_comment" method="post">
+                        <input type="hidden" name="comment_id" value="{{ child.id }}" />
+                        <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                        <input type="submit" value="Kyllä, poista vastaus" />
+                      </form>
+                    </dialog>
+                    {% endif %}
+                    {% endif %}
+                    {% if child.votes == 1 %}
+                    <p>{{ child.votes }} ääni</p>
+                    {% else %}
+                    <p>{{ child.votes }} ääntä</p>
+                    {% endif %}
+                  </div>
+                </details>
+              </li>
+              {% endfor %}
+            </ul>
+          </section>
+          {% endif %}
         </details>
       </li>
       {% endfor %}
