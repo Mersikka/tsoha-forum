@@ -158,6 +158,13 @@ def update_comment():
     if len(body) > 3000 or not body:
         abort(403)
 
+    comment = comments.get_comment(comment_id)
+    if comment:
+        if comment["user_id"] != session["user_id"]:
+            abort(403)
+    else:
+        abort(404)
+
     comments.update_comment(comment_id, body)
 
     return redirect(f"/threads/{thread_id}#{comment_id}")
@@ -169,6 +176,14 @@ def delete_comment():
 
     thread_id = request.form["thread_id"]
     comment_id = request.form["comment_id"]
+
+    comment = comments.get_comment(comment_id)
+    if comment:
+        if comment["user_id"] != session["user_id"]:
+            abort(403)
+    else:
+        abort(404)
+
     comments.delete_comment(comment_id)
 
     return redirect(f"/threads/{thread_id}")
@@ -212,23 +227,24 @@ def edit_thread(thread_id):
     require_login()
 
     thread = threads.get_thread(thread_id)
-    if not thread:
-        abort(404)
-    if thread["user_id"] != session["user_id"]:
-        abort(403)
+    if thread:
+        if thread["user_id"] != session["user_id"]:
+            abort(403)
 
-    # Convert thread["created_at"] to local time
-    local_time = datetime.now().astimezone()
-    utc_offset = local_time.utcoffset()
-    created_time = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
-    if utc_offset:
-        created_time = created_time + utc_offset
-    thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
+        # Convert thread["created_at"] to local time
+        local_time = datetime.now().astimezone()
+        utc_offset = local_time.utcoffset()
+        created_time = datetime.strptime(thread["created_at"], r"%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+        if utc_offset:
+            created_time = created_time + utc_offset
+        thread["created_at"] = created_time.strftime(r"%Y-%m-%d %H:%M:%S")
 
-    if thread["tags"]:
-        thread["tags"] = " ".join(thread["tags"])
+        if thread["tags"]:
+            thread["tags"] = " ".join(thread["tags"])
+        else:
+            del thread["tags"]
     else:
-        del thread["tags"]
+        abort(404)
 
     return render_template("edit_thread.html", thread=thread)
 
@@ -240,10 +256,11 @@ def update_thread():
     thread_id = request.form["thread_id"]
 
     thread = threads.get_thread(thread_id)
-    if not thread:
+    if thread:
+        if thread["user_id"] != session["user_id"]:
+            abort(403)
+    else:
         abort(404)
-    if thread["user_id"] != session["user_id"]:
-        abort(403)
     
     title = request.form["title"]
     if len(title) > 100 or not title:
@@ -265,10 +282,11 @@ def delete_thread(thread_id):
     require_login()
 
     thread = threads.get_thread(thread_id)
-    if not thread:
+    if thread:
+        if thread["user_id"] != session["user_id"]:
+            abort(403)
+    else:
         abort(404)
-    if thread["user_id"] != session["user_id"]:
-        abort(403)
 
     threads.delete_thread(thread_id)
     return redirect("/")
