@@ -29,9 +29,20 @@
     <div>
       <input class="button" type="submit" value="Päivitä lankaa" />
       <a id="back" class="button" href="/threads/{{ thread['id'] }}">Peruuta</a>
-      <a id="delete" class="button" href="/delete_thread/{{ thread['id'] }}">Poista lanka</a>
+      <button type="button" command="show-modal" commandfor="delete-thread-dialog">
+        Poista
+      </button>
     </div>
   </form>
+  <dialog id="delete-thread-dialog">
+    <p>
+      Haluatko varmasti poistaa langan?
+    </p>
+    <button commandfor="delete-thread-dialog" command="close">Peruuta</button>
+    <form action="/delete_thread/{{ thread.id }}" method="post">
+      <input type="submit" value="Kyllä, poista lanka" />
+    </form>
+  </dialog>
 </body>
 
 </html>

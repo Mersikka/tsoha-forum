@@ -20,9 +20,7 @@
     <p class="creator">Luonut: <a href="/users/{{ thread['user_id'] }}">{{ thread['username'] }}</a></p>
     <p class="created-at">{{ thread["created_at"] }}</p>
   </div>
-  <p id="body">
-    {{ thread["body"] }}
-  </p>
+  <p class="body p">{{ thread["body"] }}</p>
   <ul>
     {% for tag in thread["tags"] %}
     <li>{{ tag }}</li>
@@ -72,11 +70,20 @@
     <h2>Kommentit</h2>
     <ul>
       {% for parent in thread.comments %}
-      <li class="">
+      <li class="comment" id="{{ parent.id }}">
         <details open>
           <summary class="hide_comment"></summary>
           <p class="commenter"><a href="/users/{{ parent.user_id }}">{{ parent.username }}</a></p>
-          <p>{{ parent.body }}</p>
+          <p class="body p">{{ parent.body }}</p>
+          {% if session.user_id == parent.user_id %}
+          <form class="update-comment" action="/update_comment" method="post">
+            <label for="body">Muokkaa kommenttia</label> <br />
+            <textarea required name="body" rows="10" cols="50" maxlength="3000">{{ parent.body }}</textarea>
+            <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+            <input type="hidden" name="comment_id" value="{{ parent.id }}" />
+            <input type="submit" value="Päivitä kommenttia" />
+          </form>
+          {% endif %}
           <p>{{ parent.created_at_local }}</p>
 
           <div class="comment-interact">
@@ -97,6 +104,25 @@
               <input type="hidden" name="thread_id" value="{{ thread.id }}" />
               <input class="button" type="submit" value="Äänestä" />
             </form>
+            {% endif %}
+            {% if session.user_id == parent.user_id %}
+            <input class="edit-checkbox" id="edit-checkbox-{{ parent.id }}" name="edit-checkbox" type="checkbox" />
+            <label for="edit-checkbox-{{ parent.id }}">Muokkaa</label>
+
+            <button command="show-modal" commandfor="delete-comment-dialog">
+              Poista
+            </button>
+            <dialog id="delete-comment-dialog">
+              <p>
+                Haluatko varmasti poistaa kommentin?
+              </p>
+              <button commandfor="delete-comment-dialog" command="close">Peruuta</button>
+              <form action="/delete_comment" method="post">
+                <input type="hidden" name="comment_id" value="{{ parent.id }}" />
+                <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                <input type="submit" value="Kyllä, poista kommentti" />
+              </form>
+            </dialog>
             {% endif %}
             {% endif %}
             {% if parent.votes == 1 %}

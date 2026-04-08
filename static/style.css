@@ -5,3 +5,29 @@
 details[open] > .hide_comment::after {
   content: "Piilota";
 }
+
+.p {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.edit-checkbox {
+  display: none;
+}
+
+.update-comment {
+  display: none;
+}
+
+.comment:has(.edit-checkbox:checked) .update-comment {
+  display: block;
+}
+
+.comment .body {
+  display: block;
+}
+
+.comment:has(.edit-checkbox:checked) .body {
+  display: none;
+}

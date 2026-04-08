@@ -147,6 +147,33 @@ def create_comment():
     return redirect(f"/threads/{thread_id}")
 
 
+@app.route("/update_comment", methods=["POST"])
+def update_comment():
+    require_login()
+
+    thread_id = request.form["thread_id"]
+    comment_id = request.form["comment_id"]
+    body = request.form["body"]
+
+    if len(body) > 3000 or not body:
+        abort(403)
+
+    comments.update_comment(comment_id, body)
+
+    return redirect(f"/threads/{thread_id}#{comment_id}")
+
+
+@app.route("/delete_comment", methods=["POST"])
+def delete_comment():
+    require_login()
+
+    thread_id = request.form["thread_id"]
+    comment_id = request.form["comment_id"]
+    comments.delete_comment(comment_id)
+
+    return redirect(f"/threads/{thread_id}")
+
+
 @app.route("/vote", methods=["POST"])
 def vote():
     require_login()
@@ -177,7 +204,7 @@ def vote_comment():
     else:
         comments.vote_comment(comment_id, voter_id)
 
-    return redirect(f"/threads/{thread_id}")
+    return redirect(f"/threads/{thread_id}#{comment_id}")
 
 
 @app.route("/edit_thread/<int:thread_id>")
@@ -233,7 +260,7 @@ def update_thread():
     return redirect(f"/threads/{thread_id}")
 
 
-@app.route("/delete_thread/<int:thread_id>", methods=["GET", "POST"])  # pyright: ignore[reportArgumentType]
+@app.route("/delete_thread/<int:thread_id>", methods=["POST"])  # pyright: ignore[reportArgumentType]
 def delete_thread(thread_id):
     require_login()
 
@@ -243,15 +270,8 @@ def delete_thread(thread_id):
     if thread["user_id"] != session["user_id"]:
         abort(403)
 
-    if request.method == "GET":
-        return render_template("delete_thread.html", thread=thread)
-
-    if request.method == "POST":
-        if "remove" in request.form:
-            threads.delete_thread(thread_id)
-            return redirect("/")
-        else:
-            return redirect(f"/threads/{thread_id}")
+    threads.delete_thread(thread_id)
+    return redirect("/")
 
 
 @app.route("/register")
