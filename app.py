@@ -1,5 +1,6 @@
 import math
 import re
+import secrets
 import sqlite3
 from datetime import datetime, timezone
 
@@ -16,6 +17,11 @@ app.secret_key = config.secret_key
 
 def require_login():
     if "user_id" not in session:
+        abort(403)
+
+
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
 
@@ -116,6 +122,7 @@ def new_thread():
 
 @app.route("/create_thread", methods=["POST"])
 def create_thread():
+    check_csrf()
     require_login()
 
     title = request.form["title"]
@@ -137,6 +144,7 @@ def create_thread():
 
 @app.route("/create_comment", methods=["POST"])
 def create_comment():
+    check_csrf()
     require_login()
 
     body = request.form["body"]
@@ -161,6 +169,7 @@ def create_comment():
 
 @app.route("/update_comment", methods=["POST"])
 def update_comment():
+    check_csrf()
     require_login()
 
     thread_id = request.form["thread_id"]
@@ -184,6 +193,7 @@ def update_comment():
 
 @app.route("/delete_comment", methods=["POST"])
 def delete_comment():
+    check_csrf()
     require_login()
 
     thread_id = request.form["thread_id"]
@@ -203,6 +213,7 @@ def delete_comment():
 
 @app.route("/vote", methods=["POST"])
 def vote():
+    check_csrf()
     require_login()
 
     remove_vote = bool(request.form["remove_vote"])
@@ -219,6 +230,7 @@ def vote():
 
 @app.route("/vote_comment", methods=["POST"])
 def vote_comment():
+    check_csrf()
     require_login()
 
     remove_vote = bool(request.form["remove_vote"])
@@ -263,6 +275,7 @@ def edit_thread(thread_id):
 
 @app.route("/update_thread", methods=["POST"])
 def update_thread():
+    check_csrf()
     require_login()
 
     thread_id = request.form["thread_id"]
@@ -291,6 +304,7 @@ def update_thread():
 
 @app.route("/delete_thread/<int:thread_id>", methods=["POST"])  # pyright: ignore[reportArgumentType]
 def delete_thread(thread_id):
+    check_csrf()
     require_login()
 
     thread = threads.get_thread(thread_id)
@@ -345,6 +359,7 @@ def login():
         if res:
             session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         else:
             abort(Response("VIRHE: väärä tunnus tai salasana. Sinut uudelleenohjataan 3 sekunnin kuluttua...",
@@ -356,4 +371,5 @@ def logout():
     if "user_id" in session:
         del session["user_id"]
         del session["username"]
+        del session["check_csrf"]
     return redirect("/")

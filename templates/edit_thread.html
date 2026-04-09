@@ -3,10 +3,7 @@
 
 <head>
   <title>Langan muokkaus</title>
-  <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
 <body>
@@ -27,6 +24,7 @@
     </p>
     <input type="hidden" name="thread_id" value="{{ thread['id'] }}" />
     <div>
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       <input class="button" type="submit" value="Päivitä lankaa" />
       <a id="back" class="button" href="/threads/{{ thread['id'] }}">Peruuta</a>
       <button type="button" command="show-modal" commandfor="delete-thread-dialog">
@@ -40,6 +38,7 @@
     </p>
     <button commandfor="delete-thread-dialog" command="close">Peruuta</button>
     <form action="/delete_thread/{{ thread.id }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       <input type="submit" value="Kyllä, poista lanka" />
     </form>
   </dialog>

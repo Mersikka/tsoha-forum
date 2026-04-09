@@ -3,10 +3,7 @@
 
 <head>
   <title>Uusi lanka</title>
-  <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
 <body>
@@ -25,6 +22,7 @@
       <input type="text" name="tags" size="35" maxlength="100" placeholder="#kissat #videopelit #urheilu"
         pattern="\s*#\S+(?:\s+#\S+)*\s*" />
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Luo lanka" />
   </form>
   <a id="back" class="button" href="/">Takaisin</a>

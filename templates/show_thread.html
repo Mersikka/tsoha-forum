@@ -28,21 +28,18 @@
   </p>
   <div>
     {% if "user_id" in session %}
-    {% if thread.has_user_voted %}
     <form action="/vote" method="post">
       <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
       <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+      {% if thread.has_user_voted %}
       <input type="hidden" name="remove_vote" value="1" />
       <input class="button" type="submit" value="Poista ääni" />
-    </form>
-    {% else %}
-    <form action="/vote" method="post">
-      <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
-      <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+      {% else %}
       <input type="hidden" name="remove_vote" value="" />
       <input class="button" type="submit" value="Äänestä" />
+      {% endif %}
     </form>
-    {% endif %}
     {% endif %}
     {% if thread.votes == 1 %}
     <p>{{ thread.votes }} ääni</p>
@@ -58,6 +55,7 @@
         <label for="body">Kirjoita kommentti</label> <br />
         <textarea required name="body" rows="10" cols="50" maxlength="3000"></textarea>
         <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
         <input type="submit" value="Luo kommentti" />
       </form>
     </details>
@@ -78,6 +76,7 @@
             <textarea required name="body" rows="10" cols="50" maxlength="3000">{{ parent.body }}</textarea>
             <input type="hidden" name="thread_id" value="{{ thread.id }}" />
             <input type="hidden" name="comment_id" value="{{ parent.id }}" />
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
             <input type="submit" value="Päivitä kommenttia" />
           </form>
           {% endif %}
@@ -91,6 +90,7 @@
               <input type="hidden" name="comment_id" value="{{ parent.id }}" />
               <input type="hidden" name="remove_vote" value="1" />
               <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
               <input class="button" type="submit" value="Poista ääni" />
             </form>
             {% else %}
@@ -99,6 +99,7 @@
               <input type="hidden" name="comment_id" value="{{ parent.id }}" />
               <input type="hidden" name="remove_vote" value="" />
               <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+              <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
               <input class="button" type="submit" value="Äänestä" />
             </form>
             {% endif %}
@@ -117,6 +118,7 @@
               <form action="/delete_comment" method="post">
                 <input type="hidden" name="comment_id" value="{{ parent.id }}" />
                 <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
                 <input type="submit" value="Kyllä, poista kommentti" />
               </form>
             </dialog>
@@ -135,6 +137,7 @@
                 <textarea required name="body" rows="10" cols="50" maxlength="3000"></textarea>
                 <input type="hidden" name="thread_id" value="{{ thread.id }}" />
                 <input type="hidden" name="parent_comment_id" value="{{ parent.id }}" />
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
                 <input type="submit" value="Luo vastaus" />
               </form>
             </details>
@@ -156,6 +159,7 @@
                     <textarea required name="body" rows="10" cols="50" maxlength="3000">{{ child.body }}</textarea>
                     <input type="hidden" name="thread_id" value="{{ thread.id }}" />
                     <input type="hidden" name="comment_id" value="{{ child.id }}" />
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
                     <input type="submit" value="Päivitä vastausta" />
                   </form>
                   {% endif %}
@@ -167,6 +171,7 @@
                       <input type="hidden" name="voter_id" value="{{ session.user_id }}" />
                       <input type="hidden" name="comment_id" value="{{ child.id }}" />
                       <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
                       {% if child.id in thread.voted_comments %}
                       <input type="hidden" name="remove_vote" value="1" />
                       <input class="button" type="submit" value="Poista ääni" />
@@ -191,6 +196,7 @@
                       <form action="/delete_comment" method="post">
                         <input type="hidden" name="comment_id" value="{{ child.id }}" />
                         <input type="hidden" name="thread_id" value="{{ thread.id }}" />
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
                         <input type="submit" value="Kyllä, poista vastaus" />
                       </form>
                     </dialog>
