@@ -5,13 +5,13 @@ Sovellus on Redditin kaltainen foorumi, jossa
 - [X] ... muokata ja ...
 - [X] ... poistaa lankojen aloituksia.
 - [X] Lankojen yhteydessä näkyy aikaleima.
-- [ ] Kommenttien yhteydessä näkyy aikaleima.
+- [X] Kommenttien yhteydessä näkyy aikaleima.
 - [ ] Käyttäjä voi lisätä kuvia aloituksiin.
 - [X] Käyttäjä näkee itse ja muiden lisäämät langat.
 - [X] Käyttäjä voi etsiä lankoja hakusanoin tai tägein.
-- [ ] Sovelluksessa on käyttäjäsivut, jossa näkee aloitetut langat, kommentit sekä saatujen tykkäysten yhteismäärän.
+- [X] Sovelluksessa on käyttäjäsivut, jossa näkee aloitetut langat, sekä saatujen tykkäysten yhteismäärän.
 - [X] Käyttäjä voi luokitella lankoja tägeillä.
-- [ ] Käyttäjä voi kommentoida omia ja muiden tekemiä lankoja, sekä tykätä aloituksista ja kommenteista.
+- [X] Käyttäjä voi kommentoida omia ja muiden tekemiä lankoja, sekä tykätä aloituksista ja kommenteista.
 
 ## Sovelluksen asennus
 
