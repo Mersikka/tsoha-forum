@@ -65,7 +65,7 @@ def get_comment(comment_id):
                c.body,
                c.user_id,
                c.thread_id,
-               c.parent_comment_id
+               c.parent_comment_id,
                c.votes,
                c.created_at,
                u.username
