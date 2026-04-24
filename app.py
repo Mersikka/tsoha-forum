@@ -3,6 +3,7 @@ import re
 import secrets
 import sqlite3
 from datetime import datetime, timezone
+from termios import CS5
 
 from flask import Flask, Response, abort, redirect, render_template, request, session
 
@@ -341,6 +342,7 @@ def create():
     if res:
         session["user_id"] = user_id
         session["username"] = username
+        session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
     abort(500)
 
@@ -371,5 +373,5 @@ def logout():
     if "user_id" in session:
         del session["user_id"]
         del session["username"]
-        del session["check_csrf"]
+        del session["csrf_token"]
     return redirect("/")
