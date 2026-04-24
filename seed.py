@@ -5,7 +5,6 @@ from werkzeug.security import generate_password_hash
 
 db = sqlite3.connect("database.db")
 
-db.execute("DELETE FROM assets")
 db.execute("DELETE FROM users")
 db.execute("DELETE FROM threads")
 db.execute("DELETE FROM comments")

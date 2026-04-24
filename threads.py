@@ -3,10 +3,10 @@ from re import fullmatch
 import db
 
 
-def add_thread(title, body, tags, user_id, asset_id=None):
-    sql = """INSERT INTO threads (title, body, asset_id, user_id)
+def add_thread(title, body, tags, user_id):
+    sql = """INSERT INTO threads (title, body, user_id)
              VALUES (?, ?, ?, ?)"""
-    db.execute(sql, [title, body, asset_id, user_id])
+    db.execute(sql, [title, body, user_id])
 
     # Link tags to thread
     thread_id = db.last_insert_id()
@@ -37,7 +37,6 @@ def get_thread(thread_id):
         SELECT threads.id,
                threads.title,
                threads.body,
-               threads.asset_id,
                threads.created_at,
                users.id user_id,
                threads.votes,
@@ -68,7 +67,6 @@ def get_thread(thread_id):
     return {
         "title": thread["title"],
         "body": thread["body"],
-        "asset_id": thread["asset_id"],
         "username": thread["username"],
         "created_at": thread["created_at"],
         "user_id": thread["user_id"],

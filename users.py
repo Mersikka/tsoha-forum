@@ -12,6 +12,11 @@ def create_user(username, password):
     db.execute(sql, [username, password_hash])
 
 
+def update_pfp(user_id, image):
+    sql = "UPDATE users SET pfp = ? WHERE id = ?"
+    db.execute(sql, [image, user_id])
+
+
 def check_credentials(username, password):
         sql = "SELECT id, password_hash FROM users WHERE username = ?"
         result = db.query(sql, [username])
@@ -30,6 +35,7 @@ def get_user(user_id):
         """
         SELECT id,
                username,
+               pfp IS NOT NULL has_pfp,
                votes_received
         FROM users
         WHERE id = ?
@@ -41,6 +47,13 @@ def get_user(user_id):
 
     user = user_rows[0]
     return user
+
+
+def get_pfp(user_id):
+    pfp_rows = db.query("SELECT pfp FROM users WHERE id = ?", [user_id])
+    if not pfp_rows:
+        return None
+    return pfp_rows[0]
 
 
 def get_thread_ids_by_user(user_id):

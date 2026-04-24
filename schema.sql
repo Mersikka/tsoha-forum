@@ -1,14 +1,8 @@
-CREATE TABLE assets (
-    id INTEGER PRIMARY KEY,
-    filename TEXT NOT NULL,
-    content BLOB NOT NULL
-);
-
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    profile_picture INTEGER REFERENCES assets(id),
     password_hash TEXT NOT NULL,
+    pfp BLOB,
     votes_received INTEGER DEFAULT 0
 );
 
@@ -16,7 +10,6 @@ CREATE TABLE threads (
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
     body TEXT,
-    asset_id INTEGER REFERENCES assets(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id),
     votes INTEGER DEFAULT 0,
     number_of_comments INTEGER DEFAULT 0,

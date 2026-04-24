@@ -4,7 +4,17 @@ import secrets
 import sqlite3
 from datetime import datetime, timezone
 
-from flask import Flask, Response, abort, redirect, render_template, request, session
+from flask import (
+    Flask,
+    Response,
+    abort,
+    flash,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    session,
+)
 
 import comments
 import config
@@ -106,6 +116,35 @@ def show_user(user_id):
         threads_by_user = []
 
     return render_template("show_user.html", user=user, threads_by_user=threads_by_user)
+
+
+@app.route("/pfp/<int:user_id>")
+def show_pfp(user_id):
+    pfp = users.get_pfp(user_id)
+    if not pfp:
+        abort(404)
+    res = make_response(bytes(pfp))
+    res.headers.set("Content-Type", "image/jpeg")
+    return res
+
+
+@app.route("/update_pfp", methods=["POST"])
+def update_pfp():
+    check_csrf()
+    require_login()
+
+    file = request.files["pfp"]
+    if not file or not file.filename:
+        abort(404)
+    elif not file.filename.endswith((".jpg", ".png")):
+        return "VIRHE: väärä tiedostomuoto"
+    image = file.read()
+    if len(image) > 100 * 1024:
+        return "VIRHE: liian suuri kuva"
+    user_id = session["user_id"]
+    users.update_pfp(user_id, image)
+    return redirect("/users/" + str(user_id))
+        
 
 
 @app.route("/threads")

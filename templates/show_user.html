@@ -3,21 +3,33 @@
 
 <head>
   <title>Käyttäjä {{ user["username"] }}</title>
-  <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 
 <body>
   <h1>Käyttäjä {{ user["username"] }}</h1>
+  {% if user.has_pfp %}
+  <img src="/pfp/{{ user.id }}" />
+  {% endif %}
+  {% if session["user_id"] == user["id"] %}
+  <details>
+    <summary>
+      {% if user.has_pfp %}
+      Muokkaa profiilikuvaa
+      {% else %}
+      Lisää profiilikuva
+      {% endif%}
+    </summary>
+    <form action="/update_pfp" method="post" enctype="multipart/form-data">
+      <label for="pfp">Kuva: </label>
+      <input type="file" name="pfp" accept="image/png, image/jpeg" />
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+      <input type="submit" value="Lähetä" />
+    </form>
+  </details>
+  {% endif %}
   <p id="karma">Karma: {{ user["votes_received"] }}</p>
 
-  {% if session["user_id"] == user["id"] %}
-  <p id="edit_user" class="button">
-    <a href="/edit_user/{{ user['id'] }}">Muokkaa käyttäjätietoja</a>
-  </p>
-  {% endif %}
   {% if threads_by_user | count == 0 %}
   <p>
     Käyttäjä ei ole aloittanut lankoja.

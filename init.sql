@@ -1,6 +1,5 @@
 
 -- Clear database
-DELETE FROM assets;
 DELETE FROM users;
 DELETE FROM threads;
 DELETE FROM comments;
