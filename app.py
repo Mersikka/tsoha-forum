@@ -3,7 +3,6 @@ import re
 import secrets
 import sqlite3
 from datetime import datetime, timezone
-from termios import CS5
 
 from flask import Flask, Response, abort, redirect, render_template, request, session
 
